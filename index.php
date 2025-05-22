@@ -59,6 +59,8 @@ $conn->close();
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link ref="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
   <link rel="stylesheet" href="style/css/style.css?v=1.0.2">
 
 
@@ -69,25 +71,51 @@ $conn->close();
   <!-- Sidebar toggle button -->
   <button id="sidebarToggle" class="sidebar-toggle">☰</button>
 
-  <!-- Slide-out sidebar -->
-  <nav id="sidebar" class="sidebar">
-    <ul>
-      <li><a href="index.php">Dashboard</a></li>
-      <li><a href="log_sale.php">Log Sale</a></li>
-      <li><a href="account.php">Account</a></li>
-      <li><a href="logout.php">Logout</a></li>
-    </ul>
-  </nav>
+
+<!-- Slide-out sidebar -->
+<nav id="sidebar" class="sidebar">
+  <ul>
+    <li>
+      <a href="index.php">
+        <i class="fa-solid fa-house"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a href="log_sale.php">
+        <i class="fa-solid fa-circle-plus"></i>
+        <span>Log Sale</span>
+      </a>
+    </li>
+    <li>
+      <a href="account.php">
+        <i class="fa-solid fa-user-cog"></i>
+        <span>Account</span>
+      </a>
+    </li>
+    <li>
+      <a href="logout.php">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+      </a>
+    </li>
+  </ul>
+</nav>
 
   <!-- Main content -->
   <div id="mainContent" class="main-content">
     <header>
       <h1>Welcome, <?= htmlspecialchars($firstName, ENT_QUOTES) ?>!</h1>
       <div class="date-nav">
-        <button id="prevDay">◀</button>
-        <span id="currentDate"></span>
-        <button id="nextDay">▶</button>
+          <button id="prevDay" class="date-btn" title="Previous Day">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <span id="currentDate" class="date-label">01/06/2025</span>
+          <button id="nextDay" class="date-btn" title="Next Day">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
       </div>
+
     </header>
 
     <main class="dashboard-grid">
@@ -127,14 +155,13 @@ $conn->close();
           <?php endif; ?>
         </ol>
       </div>
-
-      <a href="log_sale.php" class="widget full-width log-sale-btn">
-        Log a New Sale
-      </a>
+        <a href="log_sale.php" class="widget full-width log-sale-btn">
+          <i class="fa-solid fa-plus-circle fa-3x"></i>
+        </a>
     </main>
 
     <footer>
-      <p>&copy; 2025 Your Company</p>
+      <p>&copy; 2025 Teerasak Mairoddee</p>
     </footer>
   </div>
 
@@ -167,5 +194,9 @@ $conn->close();
       toggleBtn.textContent = isOpen ? '✖' : '☰';
     });
   </script>
+    <!-- Floating Add‐Sale Button -->
+<a href="log_sale.php" class="fab" aria-label="Log a New Sale">
+  <i class="fa-solid fa-plus"></i>
+</a>
 </body>
 </html>

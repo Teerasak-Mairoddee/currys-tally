@@ -1,3 +1,8 @@
+:root {
+    --accent: #6A0DAD;
+    --accent-hover: #580B8F;
+}
+
 /* Use Currys’ Inter font everywhere by default */
 body, input, button, select, textarea {
     font-family: 'Inter', sans-serif;
@@ -6,13 +11,13 @@ body, input, button, select, textarea {
 /* layout grid for widgets */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1rem;
     align-items: start;
     padding: 1rem;
     max-width: 1200px;
     margin: 0 auto;
-
+    grid-auto-rows: minmax(250px, auto);
 }
 
 header {
@@ -32,11 +37,16 @@ footer {
     border-radius: 4px;
     padding: 1rem;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 250px;
     text-align: center;
 }
 
     .widget h2 {
-        margin: 0 0 0.5rem;
+        margin: 0 0 1.5rem;
         font-size: 1.1rem;
         color: #333;
     }
@@ -44,51 +54,81 @@ footer {
     .widget .value {
         font-size: 2.5rem;
         font-weight: bold;
-        color: #007bff;
+        color: var(--accent);
     }
 
 .date-nav {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: .5rem;
-    justify-content: center;
-    margin-bottom: 1rem;
+
+ 
+  
+    padding: 0.25rem 0.5rem;
+    gap: 0.5rem;
 }
+
+.date-label {
+    font-weight: 600;
+    min-width: 100px;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.date-btn {
+    background: transparent;
+    border: none;
+    padding: 0.25rem;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+    .date-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .date-btn:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+
 
 #currentDate {
     font-weight: bold;
 }
 
-/* Make any .full-width grid item span all columns */
+/* Full-width button spans all columns */
 .dashboard-grid .full-width {
     grid-column: 1 / -1;
-    padding: 0; /* remove widget padding so button fills entirely */
+    padding: 0;
 }
 
-/* Style the full-width button (now the .widget itself) */
+/* Log Sale button styling */
 .log-sale-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #007bff;
+    background-color: var(--accent);
     color: #fff;
     font-weight: bold;
     text-decoration: none;
-    height: 100%; /* fill the widget’s full height */
-    padding: 1rem 0; /* vertical padding, horizontal automatically centers */
-    border-radius: 4px; /* if you like */
+    height: 100%;
+    padding: 1rem 0;
+    border-radius: 4px;
     transition: background-color 0.2s;
 }
 
     .log-sale-btn:hover {
-        background-color: #0056b3;
+        background-color: var(--accent-hover);
     }
 
 /* Sidebar base */
 .sidebar {
     position: fixed;
     top: 0;
-    left: -240px; /* hidden offscreen */
+    left: -240px;
     width: 240px;
     height: 100vh;
     background: #333;
@@ -96,12 +136,13 @@ footer {
     overflow-y: auto;
     transition: left 0.3s ease;
     z-index: 1000;
+    padding-top: 4rem;
 }
 
     .sidebar ul {
         list-style: none;
         padding: 0;
-        margin: 2rem 0;
+        margin: 0;
     }
 
     .sidebar li + li {
@@ -126,7 +167,7 @@ footer {
     top: 1rem;
     left: 1rem;
     z-index: 1100;
-    background: #007bff;
+    background: var(--accent);
     border: none;
     color: #fff;
     font-size: 1.5rem;
@@ -138,7 +179,7 @@ footer {
 }
 
     .sidebar-toggle:hover {
-        background: #0056b3;
+        background: var(--accent-hover);
     }
 
 /* Main content shifts right when sidebar is open */
@@ -157,3 +198,180 @@ footer {
     margin-left: 240px;
 }
 
+/* in style/css/style.css (or your form-specific stylesheet) */
+
+/* Base input style */
+.form-custom__input,
+input[type="number"],
+select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+    /* Focus state */
+    .form-custom__input:focus,
+    input[type="number"]:focus,
+    select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.15); /* var(--accent) at 15% */
+        outline: none;
+    }
+
+/* Label styling */
+.form-custom__group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+    .form-custom__group label,
+    .form-custom__label {
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+/* Placeholder color */
+.form-custom__input::placeholder {
+    color: #999;
+}
+
+/* Style the select arrow */
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='14' height='8' viewBox='0 0 14 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23999' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 14px 8px;
+    padding-right: 2.5rem;
+}
+
+    /* Disabled state */
+    .form-custom__input[disabled],
+    select[disabled] {
+        background: #f5f5f5;
+        color: #999;
+        cursor: not-allowed;
+    }
+
+/* === Account Summary === */
+.account-summary {
+    margin: 2rem auto;
+    max-width: 800px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* === Alerts === */
+.alert {
+    max-width: 800px;
+    margin: 1rem auto;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+    .alert.success {
+        background: #e5f7e0;
+        color: #217a1d;
+    }
+
+    .alert.error {
+        background: #fdecea;
+        color: #a12a2a;
+    }
+
+/* === Account Form === */
+.account-form {
+    max-width: 400px;
+    margin: 2rem auto 1rem;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.form-account .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.form-account label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-account input[type="color"] {
+    width: 100%;
+    height: 3rem;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.form-account .btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+    .form-account .btn:hover {
+        background: var(--accent-hover);
+    }
+
+.form-account .link-back {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+    .form-account .link-back:hover {
+        color: var(--accent-hover);
+    }
+
+/* Floating Action Button (FAB) */
+.fab {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 56px;
+    height: 56px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: background 0.2s, transform 0.2s;
+    z-index: 1500;
+}
+
+    .fab:hover {
+        background: var(--accent-hover);
+        transform: scale(1.05);
+    }
+
+    .fab:focus {
+        outline: 2px solid var(--accent-hover);
+        outline-offset: 2px;
+    }
