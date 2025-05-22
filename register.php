@@ -1,7 +1,6 @@
 ﻿<?php
 session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
 
 $errors = [];
 
@@ -11,10 +10,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 1) Trim & sanitize
     $first   = trim($_POST['First_Name']   ?? '');
     $last    = trim($_POST['Last_Name']    ?? '');
-    $email   = trim($_POST['email']       ?? '');
-    $phone   = trim($_POST['phone']       ?? '');
-    $pass    = $_POST['password']         ?? '';
-    $confirm = $_POST['confirmPassword']  ?? '';
+    $email   = trim($_POST['email']        ?? '');
+    $phone   = trim($_POST['phone']        ?? '');
+    $pass    = $_POST['password']          ?? '';
+    $confirm = $_POST['confirmPassword']   ?? '';
 
     // 2) Basic validation
     if ($first === '') {
@@ -26,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'A valid email is required.';
     } elseif (!preg_match('/^[^@]+@currys\.co\.uk$/i', $email)) {
-        $errors[] = 'You must register with a @currys.co.uk email address.';
+        $errors[] = 'Not authorised to join.';
     }
     if ($pass === '' || $confirm === '') {
         $errors[] = 'Both password fields are required.';
@@ -77,15 +76,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sign Up | Currys Tracker</title>
-  <link rel="stylesheet" href="style.css?v=123" />
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="style/css/style.css?v=1.1.1">
 </head>
-<body>
+<body class="register-page">
 
-  <section class="section-login">
-    <h2>Create Your Currys Tracker Account</h2>
+  <div class="register-container">
+    <h2 class="form-title">Create Your Currys Tracker Account</h2>
 
-    <?php if (!empty($errors)): ?>
-      <div class="errors">
+    <?php if ($errors): ?>
+      <div class="alert error">
         <ul>
           <?php foreach ($errors as $e): ?>
             <li><?= htmlspecialchars($e, ENT_QUOTES) ?></li>
@@ -94,41 +103,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     <?php endif; ?>
 
-    <form method="POST" class="form-login">
-      <label>
-        First Name
-        <input type="text" name="First_Name" required value="<?= htmlspecialchars($_POST['First_Name'] ?? '', ENT_QUOTES) ?>">
-      </label>
+    <form method="POST" class="form-register">
+      <div class="form-group">
+        <label for="First_Name">First Name</label>
+        <input
+          type="text"
+          id="First_Name"
+          name="First_Name"
+          class="form-control"
+          required
+          value="<?= htmlspecialchars($_POST['First_Name'] ?? '', ENT_QUOTES) ?>"
+        />
+      </div>
 
-      <label>
-        Last Name
-        <input type="text" name="Last_Name" required value="<?= htmlspecialchars($_POST['Last_Name'] ?? '', ENT_QUOTES) ?>">
-      </label>
+      <div class="form-group">
+        <label for="Last_Name">Last Name</label>
+        <input
+          type="text"
+          id="Last_Name"
+          name="Last_Name"
+          class="form-control"
+          required
+          value="<?= htmlspecialchars($_POST['Last_Name'] ?? '', ENT_QUOTES) ?>"
+        />
+      </div>
 
-      <label>
-        Currys Email (@currys.co.uk)
-        <input type="email" name="email" required value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES) ?>">
-      </label>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
 
-      <label>
-        Phone (optional)
-        <input type="tel" name="phone" value="<?= htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES) ?>">
-      </label>
+          required
+          value="<?= htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES) ?>"
+        />
+      </div>
 
-      <label>
-        Password
-        <input type="password" name="password" required>
-      </label>
+      <div class="form-group">
+        <label for="phone">Phone (optional)</label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          class="form-control"
+          value="<?= htmlspecialchars($_POST['phone'] ?? '', ENT_QUOTES) ?>"
+        />
+      </div>
 
-      <label>
-        Confirm Password
-        <input type="password" name="confirmPassword" required>
-      </label>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control"
 
-      <button type="submit">Sign Up</button>
-      <a href="login.php">Back to Login</a>
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          class="form-control"
+
+          required
+        />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn">Sign Up</button>
+        <a href="login.php" class="btn btn-secondary">Back to Login</a>
+      </div>
     </form>
-  </section>
+  </div>
 
 </body>
 </html>

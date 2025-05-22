@@ -136,10 +136,11 @@ $conn->close();
         <div class="value" id="totalInsurance">–</div>
       </div>
 
-      <div class="widget timeline-widget">
+      <a href="timeline.php" class="widget timeline-widget clickable">
         <h2>Sales Timeline</h2>
         <canvas id="myChart"></canvas>
-      </div>
+      </a>
+
 
       <div class="widget leaderboard">
         <h2>Top Contracts Today</h2>
