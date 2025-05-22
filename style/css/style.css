@@ -1,0 +1,42 @@
+/* layout grid for widgets */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    align-items: start;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+footer {
+    text-align: center;
+    margin: 2rem 0;
+    color: #666;
+}
+
+/* common widget styles */
+.widget {
+    background: #fff;
+    border-radius: 4px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+    .widget h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.1rem;
+        color: #333;
+    }
+
+    .widget .value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #007bff;
+    }

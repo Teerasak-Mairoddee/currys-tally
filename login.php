@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Login Section -->
     <section class="section-custom section-login">
-      <h2 class="section-custom__title">Login to MMAFIA</h2>
+      <h2 class="section-custom__title">Login to start tracking</h2>
 
       <?php if (!empty($errors)): ?>
         <div class="login-custom__errors">
