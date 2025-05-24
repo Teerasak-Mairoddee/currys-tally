@@ -36,6 +36,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->close();
 }
 ?>
+
+<?php 
+  $icons = [
+    'Sim-Only'     => 'fa-signal',
+    'Post-Pay'     => 'fa-credit-card',
+    'Handset-Only' => 'fa-mobile-screen-button',
+    'Insurance'    => 'fa-shield-halved'
+  ];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,6 +59,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
   <link rel="stylesheet" href="style/css/style.css?v=1.0.2">
+
+  <link
+  href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+  rel="stylesheet"
+/>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  crossorigin="anonymous"
+/>
+
 </head>
 <body>
 
@@ -111,9 +134,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="form-custom__group" style="margin-bottom:1.5rem;">
             <label class="form-custom__label" for="sale_type">Type of Sale:</label>
             <select id="sale_type" name="sale_type" class="form-custom__input" required>
-              <option value=""> - Select - </option>
+              <option value="">– Select –</option>
               <?php foreach ($allowedTypes as $type): ?>
-                <option><?= htmlspecialchars($type) ?></option>
+                <option
+                  value="<?= htmlspecialchars($type) ?>"
+                  data-icon="<?= $icons[$type] ?>"
+                >
+                  <?= htmlspecialchars($type) ?>
+                </option>
               <?php endforeach; ?>
             </select>
           </div>
@@ -150,6 +178,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       toggle.textContent = sidebar.classList.contains('open') ? '✖' : '☰';
     });
   </script>
+
+  <script>
+  function formatWithIcon(option) {
+    if (!option.id) {
+      return option.text;  // placeholder
+    }
+    // Grab the data-icon attr from the <option>
+    const iconClass = $(option.element).data('icon');
+    return $('<span><i class="fa ' + iconClass + '"></i> ' + option.text + '</span>');
+  }
+
+  $(document).ready(function() {
+    $('#sale_type').select2({
+      width: '100%',
+      templateResult:  formatWithIcon,
+      templateSelection: formatWithIcon,
+      minimumResultsForSearch: Infinity  // hide search
+    });
+  });
+</script>
 
   <a href="index.php" class="fab" aria-label="Log a New Sale">
   <i class="fa-solid fa-house"></i>

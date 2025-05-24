@@ -564,3 +564,11 @@ body.timeline-page {
     body.timeline-page .main-content {
         padding: 0;
     }
+
+.select2-container .select2-selection__rendered i {
+    margin-right: 0.5em;
+}
+
+.select2-dropdown .fa {
+    margin-right: 0.5em;
+}
