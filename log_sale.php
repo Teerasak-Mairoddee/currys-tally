@@ -162,6 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </main>
 
+
+
     <footer>
       <p><a href="index.php">← Back to Dashboard</a></p>
     </footer>
@@ -199,8 +201,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   });
 </script>
 
-  <a href="index.php" class="fab" aria-label="Log a New Sale">
-  <i class="fa-solid fa-house"></i>
-</a>
+
 </body>
 </html>
