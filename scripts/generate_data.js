@@ -32,6 +32,8 @@ function fmtQuery(d) {
 // 3) Show the current date in DD/MM/YYYY
 function updateDateDisplay() {
     dateLabel.textContent = fmtDisplay(currentDate);
+    document.getElementById('timelineLink').href =
+        `timeline.php?date=${fmtQuery(currentDate)}`;
 }
 
 // 4) Load summary widgets for the selected date
@@ -68,12 +70,33 @@ function loadChart() {
         .catch(err => console.error('Chart load error:', err));
 }
 
+// Load leaderboard
+function loadLeaderboard() {
+    fetch(`get_leaderboard.php?date=${fmtQuery(currentDate)}`)
+        .then(r => r.json())
+        .then(list => {
+            const ol = document.getElementById('leaderboardList');
+            ol.innerHTML = '';
+            if (!list.length) {
+                ol.innerHTML = '<li>No sales logged today.</li>';
+                return;
+            }
+            list.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = `${entry.name} - ${entry.cnt}`;
+                ol.appendChild(li);
+            });
+        })
+        .catch(e => console.error('Leaderboard load error:', e));
+}
+
 // 6) Shift the date by n days and reload everything
 function shiftDay(n) {
     currentDate.setDate(currentDate.getDate() + n);
     updateDateDisplay();
     loadSummary();
     loadChart();
+    loadLeaderboard();
 }
 
 // 7) Wire up Prev/Next buttons
@@ -84,3 +107,4 @@ nextBtn.addEventListener('click', () => shiftDay(1));
 updateDateDisplay();
 loadSummary();
 loadChart();
+loadLeaderboard();

@@ -23,29 +23,7 @@ if (empty($_SESSION['first_name'])) {
 }
 $firstName = $_SESSION['first_name'];
 
-// — Fetch today’s leaderboard: sum of Sim-Only + Post-Pay per staff —
-$leaderboard = [];
-$today = date('Y-m-d');
-$lb = $conn->prepare("
-    SELECT
-      s.staff_id,
-      CONCAT(s.first_name, ' ', s.last_name) AS name,
-      SUM(CASE WHEN sale_type IN ('Sim-Only','Post-Pay') THEN 1 ELSE 0 END) AS cnt
-    FROM sales
-    JOIN staff s ON sales.staff_id = s.staff_id
-    WHERE DATE(sold_at) = ?
-    GROUP BY s.staff_id
-    HAVING cnt > 0
-    ORDER BY cnt DESC
-    LIMIT 5
-");
-$lb->bind_param('s', $today);
-$lb->execute();
-$res = $lb->get_result();
-while ($row = $res->fetch_assoc()) {
-    $leaderboard[] = $row;
-}
-$lb->close();
+
 
 $conn->close();
 ?>
@@ -136,7 +114,8 @@ $conn->close();
         <div class="value" id="totalInsurance">–</div>
       </div>
 
-      <a href="timeline.php" class="widget timeline-widget clickable">
+      <a id="timelineLink" href="timeline.php?date=<?= date('Y-m-d') ?>"
+        class="widget timeline-widget clickable">
         <h2>Sales Timeline</h2>
         <canvas id="myChart"></canvas>
       </a>
@@ -144,18 +123,11 @@ $conn->close();
 
       <div class="widget leaderboard">
         <h2>Top Contracts Today</h2>
-        <ol class="leaderboard-list">
-          <?php if (empty($leaderboard)): ?>
-            <li>No sales logged today.</li>
-          <?php else: ?>
-            <?php foreach ($leaderboard as $entry): ?>
-              <li>
-                <?= htmlspecialchars($entry['name'], ENT_QUOTES) ?>: <?= intval($entry['cnt']) ?>
-              </li>
-            <?php endforeach; ?>
-          <?php endif; ?>
+        <ol id="leaderboardList" class="leaderboard-list">
+          <li>No sales logged today.</li>
         </ol>
       </div>
+
         <a href="log_sale.php" class="widget full-width log-sale-btn">
           <i class="fa-solid fa-plus-circle fa-3x"></i>
         </a>
@@ -169,7 +141,8 @@ $conn->close();
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Your chart & summary scripts -->
-  <script src="scripts/generate_data.js?v=1.0.4"></script>
+  <script src="scripts/generate_data.js?v=1.0.8"></script>
+
   <script>
     // summary fetch
     fetch('./get_summary.php')
@@ -195,6 +168,88 @@ $conn->close();
       toggleBtn.textContent = isOpen ? '✖' : '☰';
     });
   </script>
+
+  <script>
+  // 1. Track the current date in JS
+  let currentDate = new Date();
+
+  // 2. Helpers: format for display DD/MM/YYYY, and for query YYYY-MM-DD
+  function fmtDisplay(d) {
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    return `${dd}/${mm}/${d.getFullYear()}`;
+  }
+  function fmtQuery(d) {
+    return d.toISOString().slice(0,10);
+  }
+
+  // 3. Update the on-page label AND the timelineLink href
+  function updateDateUI() {
+    document.getElementById('currentDate').textContent = fmtDisplay(currentDate);
+    document.getElementById('timelineLink').href =
+      `timeline.php?date=${fmtQuery(currentDate)}`;
+  }
+
+  // 4. Shift date and reload data
+  function shiftDay(delta) {
+    currentDate.setDate(currentDate.getDate() + delta);
+    updateDateUI();
+
+    // reload your summary widgets
+    fetch(`get_summary.php?date=${fmtQuery(currentDate)}`)
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('totalSimOnly').textContent     = data['Sim-Only'];
+        document.getElementById('totalPostPay').textContent     = data['Post-Pay'];
+        document.getElementById('totalHandsetOnly').textContent = data['Handset-Only'];
+        document.getElementById('totalInsurance').textContent   = data['Insurance'];
+      });
+
+    // reload your chart
+    generateChart(fmtQuery(currentDate));
+
+    // reload your leaderboard
+    fetch(`get_leaderboard.php?date=${fmtQuery(currentDate)}`)
+      .then(r => r.json())
+      .then(list => {
+        const ol = document.getElementById('leaderboardList');
+        ol.innerHTML = '';
+        if (!list.length) {
+          ol.innerHTML = '<li>No sales logged today.</li>';
+        } else {
+          list.forEach(e => {
+            const li = document.createElement('li');
+            li.textContent = `${e.name}: ${e.cnt}`;
+            ol.appendChild(li);
+          });
+        }
+      });
+  }
+
+  // 5. Wire up your buttons
+  document.getElementById('prevDay').onclick = () => shiftDay(-1);
+  document.getElementById('nextDay').onclick = () => shiftDay( 1);
+
+  // 6. Bootstrap: extract your chart logic into a function
+  function generateChart(dateParam) {
+    // reuse your existing generate_data.js fetch logic, but passing dateParam
+    fetch(`get_sales_data.php?date=${dateParam}`)
+      .then(r => r.json())
+      .then(cfg => {
+        cfg.options = cfg.options||{};
+        cfg.options.maintainAspectRatio = false;
+        const ctx = document.getElementById('myChart').getContext('2d');
+        if (window.dashboardChart) dashboardChart.destroy();
+        window.dashboardChart = new Chart(ctx, cfg);
+      });
+  }
+
+  // 7. Kick it all off on load
+  updateDateUI();
+  shiftDay(0);  // this will call updateDateUI again, but also load data
+</script>
+
+
     <!-- Floating Add‐Sale Button -->
 <a href="log_sale.php" class="fab" aria-label="Log a New Sale">
   <i class="fa-solid fa-plus"></i>

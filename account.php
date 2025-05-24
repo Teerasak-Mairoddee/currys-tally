@@ -163,8 +163,8 @@ $conn->close();
   </script>
 
   <!-- Floating Add‐Sale Button -->
-<a href="log_sale.php" class="fab" aria-label="Log a New Sale">
-  <i class="fa-solid fa-plus"></i>
+  <a href="index.php" class="fab" aria-label="Log a New Sale">
+  <i class="fa-solid fa-house"></i>
 </a>
 
 </body>

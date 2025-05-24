@@ -107,8 +107,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <main class="dashboard-grid" style="max-width:400px;margin:1rem auto;">
       <div class="widget">
         <form method="POST" action="log_sale.php" style="width:100%;">
+
+          <div class="form-custom__group" style="margin-bottom:1.5rem;">
+            <label class="form-custom__label" for="sale_type">Type of Sale:</label>
+            <select id="sale_type" name="sale_type" class="form-custom__input" required>
+              <option value=""> - Select - </option>
+              <?php foreach ($allowedTypes as $type): ?>
+                <option><?= htmlspecialchars($type) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
           <div class="form-custom__group" style="margin-bottom:1rem;">
-            <label class="form-custom__label" for="contract_count">How Many Contract(s):</label>
+            <label class="form-custom__label" for="contract_count">Amount Sold:</label>
             <input
               type="number"
               id="contract_count"
@@ -117,15 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               min="1" required
             >
           </div>
-          <div class="form-custom__group" style="margin-bottom:1.5rem;">
-            <label class="form-custom__label" for="sale_type">Type of Sale:</label>
-            <select id="sale_type" name="sale_type" class="form-custom__input" required>
-              <option value="">-- Select --</option>
-              <?php foreach ($allowedTypes as $type): ?>
-                <option><?= htmlspecialchars($type) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
+          
           <button type="submit" class="log-sale-btn" style="width:100%;">Submit</button>
         </form>
       </div>
