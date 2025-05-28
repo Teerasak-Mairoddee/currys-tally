@@ -1,14 +1,16 @@
-﻿<?php
+﻿<?php 
 require __DIR__ . '/auth.php';      // enforces login
 include __DIR__ . '/db_conn.php';   // provides $conn
 
-$allowedTypes = ['Sim-Only','Post-Pay','Handset-Only','Insurance'];
+// 1) Add 'Accessories' here
+$allowedTypes = ['Sim-Only','Post-Pay','Handset-Only','Insurance','Accessories'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $staff_id       = intval($_SESSION['user_id']);
     $contract_count = filter_var($_POST['contract_count'] ?? '', FILTER_VALIDATE_INT);
     $sale_type      = $_POST['sale_type'] ?? '';
 
+    // 2) Validation now allows Accessories
     if ($contract_count === false || $contract_count < 1) {
         $_SESSION['flash_error'] = 'Enter a valid number of contracts.';
     } elseif (! in_array($sale_type, $allowedTypes, true)) {
@@ -35,101 +37,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $conn->close();
 }
-?>
 
-<?php 
-  $icons = [
+// 3) Add the icon for Accessories
+$icons = [
     'Sim-Only'     => 'fa-signal',
     'Post-Pay'     => 'fa-credit-card',
     'Handset-Only' => 'fa-mobile-screen-button',
-    'Insurance'    => 'fa-shield-halved'
-  ];
+    'Insurance'    => 'fa-shield-halved',
+    'Accessories'  => 'fa-box-open'
+];
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Log a New Sale</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-    <!-- Your main stylesheet -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link ref="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous"/>
+
+  <!-- Main stylesheet & dependencies -->
   <link rel="stylesheet" href="style/css/style.css?v=1.0.2">
-
   <link
-  href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-  rel="stylesheet"
-/>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  crossorigin="anonymous"
-/>
+    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+    crossorigin="anonymous"
+  />
 
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
 
   <!-- Sidebar toggle & nav -->
   <button id="sidebarToggle" class="sidebar-toggle">☰</button>
-<!-- Slide-out sidebar -->
-<nav id="sidebar" class="sidebar">
-  <ul>
-    <li>
-      <a href="index.php">
-        <i class="fa-solid fa-house"></i>
-        <span>Dashboard</span>
-      </a>
-    </li>
-    <li>
-      <a href="log_sale.php">
-        <i class="fa-solid fa-circle-plus"></i>
-        <span>Log Sale</span>
-      </a>
-    </li>
-    <li>
-      <a href="account.php">
-        <i class="fa-solid fa-user-cog"></i>
-        <span>Account</span>
-      </a>
-    </li>
-    <li>
-      <a href="logout.php">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        <span>Logout</span>
-      </a>
-    </li>
-  </ul>
-</nav>
+  <nav id="sidebar" class="sidebar">
+    <!-- ... your nav items ... -->
+  </nav>
 
   <div id="mainContent" class="main-content">
-    <header>
-      <h1>Log a New Sale</h1>
-    </header>
+    <header><h1>Log a New Sale</h1></header>
 
     <!-- Flash messages -->
     <?php if (!empty($_SESSION['flash_error'])): ?>
       <div class="widget" style="background:#ffe5e5;color:#a00;">
         <?= htmlspecialchars($_SESSION['flash_error'],ENT_QUOTES) ?>
       </div>
-      <?php unset($_SESSION['flash_error']); ?>
-    <?php endif; ?>
+    <?php unset($_SESSION['flash_error']); endif; ?>
+
     <?php if (!empty($_SESSION['flash_success'])): ?>
       <div class="widget" style="background:#e5ffe5;color:#060;">
         <?= htmlspecialchars($_SESSION['flash_success'],ENT_QUOTES) ?>
       </div>
-      <?php unset($_SESSION['flash_success']); ?>
-    <?php endif; ?>
+    <?php unset($_SESSION['flash_success']); endif; ?>
 
     <!-- Form in a centered widget -->
     <main class="dashboard-grid" style="max-width:400px;margin:1rem auto;">
       <div class="widget">
-        <form method="POST" action="log_sale.php" style="width:100%;">
+        <form method="POST" action="log_sale.php">
 
           <div class="form-custom__group" style="margin-bottom:1.5rem;">
             <label class="form-custom__label" for="sale_type">Type of Sale:</label>
@@ -153,7 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               id="contract_count"
               name="contract_count"
               class="form-custom__input"
-              min="1" required
+              min="1"
+              required
             >
           </div>
           
@@ -161,8 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
       </div>
     </main>
-
-
 
     <footer>
       <p><a href="index.php">← Back to Dashboard</a></p>
@@ -172,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- Sidebar toggle script -->
   <script>
     const sidebar = document.getElementById('sidebar'),
-          toggle = document.getElementById('sidebarToggle'),
+          toggle  = document.getElementById('sidebarToggle'),
           mainC   = document.getElementById('mainContent');
     toggle.addEventListener('click', () => {
       sidebar.classList.toggle('open');
@@ -181,26 +147,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     });
   </script>
 
+  <!-- Initialize Select2 with icons -->
   <script>
-  function formatWithIcon(option) {
-    if (!option.id) {
-      return option.text;  // placeholder
+    function formatWithIcon(option) {
+      if (!option.id) return option.text;
+      const iconClass = $(option.element).data('icon');
+      return $(`<span><i class="fa ${iconClass}"></i> ${option.text}</span>`);
     }
-    // Grab the data-icon attr from the <option>
-    const iconClass = $(option.element).data('icon');
-    return $('<span><i class="fa ' + iconClass + '"></i> ' + option.text + '</span>');
-  }
 
-  $(document).ready(function() {
-    $('#sale_type').select2({
-      width: '100%',
-      templateResult:  formatWithIcon,
-      templateSelection: formatWithIcon,
-      minimumResultsForSearch: Infinity  // hide search
+    $(document).ready(function() {
+      $('#sale_type').select2({
+        width: '100%',
+        templateResult:  formatWithIcon,
+        templateSelection: formatWithIcon,
+        minimumResultsForSearch: Infinity
+      });
     });
-  });
-</script>
-
-
+  </script>
 </body>
 </html>
