@@ -70,10 +70,6 @@ I have always been passionate about professional development, and seeing my work
 
 Please reach out for any collaborations or networking: https://linktr.ee/teerasakmairoddee
 
-# Currys Tally
-
-A secure, web-based sales tracking system built for Currys Mobile teams. Currys Tally fills a critical gap in Currys’ infrastructure by providing real-time visibility into team and individual performance. The tool has helped frontline staff surpass 200% of Post-Pay targets — all through better transparency and accountability.
-
 ---
 
 ## Table of Contents
