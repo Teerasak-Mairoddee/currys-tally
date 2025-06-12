@@ -32,7 +32,7 @@ $stmt->fetch();
 $stmt->close();
 
 // Build today's per-type summary including Accessories & Insurance
-$types   = ['Sim-Only','Post-Pay','Handset-Only','Insurance','Accessories'];
+$types = ['Sim-Only','Post-Pay','Handset-Only','Insurance','Accessories','Upgrades'];
 $summary = array_fill_keys($types, 0);
 $today   = date('Y-m-d');
 

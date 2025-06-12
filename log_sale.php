@@ -3,7 +3,8 @@ require __DIR__ . '/auth.php';      // enforces login
 include __DIR__ . '/db_conn.php';   // provides $conn
 
 // 1) Add 'Accessories' here
-$allowedTypes = ['Sim-Only','Post-Pay','Handset-Only','Insurance','Accessories'];
+$allowedTypes = ['Sim-Only', 'Post-Pay', 'Upgrades', 'Handset-Only', 'Insurance', 'Accessories'];
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $staff_id       = intval($_SESSION['user_id']);
@@ -42,9 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $icons = [
     'Sim-Only'     => 'fa-signal',
     'Post-Pay'     => 'fa-credit-card',
+    'Upgrades' => 'fa-solid fa-rotate',
     'Handset-Only' => 'fa-mobile-screen-button',
     'Insurance'    => 'fa-shield-halved',
     'Accessories'  => 'fa-box-open'
+    
 ];
 ?>
 <!DOCTYPE html>
@@ -71,10 +74,18 @@ $icons = [
 </head>
 <body>
 
-  <!-- Sidebar toggle & nav -->
+
+  <!-- Sidebar toggle button -->
   <button id="sidebarToggle" class="sidebar-toggle">☰</button>
+
+  <!-- Slide-out sidebar -->
   <nav id="sidebar" class="sidebar">
-    <!-- ... your nav items ... -->
+    <ul>
+      <li><a href="index.php"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+      <li><a href="log_sale.php"><i class="fa-solid fa-circle-plus"></i> Log Sale</a></li>
+      <li><a href="account.php"><i class="fa-solid fa-user-cog"></i> Account</a></li>
+      <li><a href="logout.php"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+    </ul>
   </nav>
 
   <div id="mainContent" class="main-content">

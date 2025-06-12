@@ -30,12 +30,14 @@ $res = $stmt->get_result();
 
 // 3) Build response—including all five types
 $response = [
-    'Sim-Only'     => 0,
-    'Post-Pay'     => 0,
-    'Handset-Only' => 0,
-    'Insurance'    => 0,
-    'Accessories'  => 0,
+  'Sim-Only' => 0,
+  'Post-Pay' => 0,
+  'Handset-Only' => 0,
+  'Insurance' => 0,
+  'Accessories' => 0,
+  'Upgrades' => 0
 ];
+
 
 while ($row = $res->fetch_assoc()) {
     // Only populate known keys

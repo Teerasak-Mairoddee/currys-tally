@@ -77,21 +77,32 @@ $conn->close();
     <main class="dashboard-grid">
       <!-- 1) Raw summary widgets -->
       <div class="widget">
-        <h2>Sim-Only Contracts</h2>
-        <div class="value" id="totalSimOnly">–</div>
-      </div>
-      <div class="widget">
         <h2>Post-Pay Contracts</h2>
         <div class="value" id="totalPostPay">–</div>
       </div>
+
       <div class="widget">
-        <h2>Handset-Only Purchases</h2>
-        <div class="value" id="totalHandsetOnly">–</div>
+        <h2>Upgrades</h2>
+        <div class="value" id="totalUpgrades">–</div>
       </div>
+
+      <div class="widget">
+        <h2>Sim-Only Contracts</h2>
+        <div class="value" id="totalSimOnly">–</div>
+      </div>
+
       <div class="widget">
         <h2>Insurance Contracts</h2>
         <div class="value" id="totalInsurance">–</div>
       </div>
+
+
+
+      <div class="widget">
+        <h2>Handset-Only Purchases</h2>
+        <div class="value" id="totalHandsetOnly">–</div>
+      </div>
+
       <div class="widget">
         <h2>Accessories Sold</h2>
         <div class="value" id="totalAccessories">–</div>
@@ -183,6 +194,8 @@ $conn->close();
           const hand   = data['Handset-Only'] || 0;
           const ins    = data['Insurance']    || 0;
           const acc    = data['Accessories']  || 0;
+          const upg = data['Upgrades'] || 0;
+
           const phones = post + hand;
 
           // populate totals
@@ -191,6 +204,8 @@ $conn->close();
           document.getElementById('totalHandsetOnly').textContent = hand;
           document.getElementById('totalInsurance').textContent   = ins;
           document.getElementById('totalAccessories').textContent = acc;
+          document.getElementById('totalUpgrades').textContent = upg;
+
 
           // accessory strike
           document.getElementById('strikeRate').textContent =
