@@ -159,6 +159,22 @@ $conn->close();
         </ol>
       </div>
 
+      <div class="widget">
+      <a href="insurance_questions.php" >
+        <i class="fa-solid fa-comments fa-2x" style="margin-right: 0.5rem;"></i>
+        Conversation Starters for Insurance
+      </a>
+    </div>
+
+    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+    <div class="widget">
+      <a href="admin.php" >
+        <i class="fa-solid fa-shield-halved"></i> Admin Controls
+      </a>
+      </div>
+    <?php endif; ?>
+
+
       <!-- 5) Log-sale button spans full width -->
       <a href="log_sale.php" class="widget full-width log-sale-btn">
         <i class="fa-solid fa-plus-circle fa-3x"></i>

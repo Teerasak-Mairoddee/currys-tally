@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         // try admin login first
-        if (! try_login($conn, $email, $password, 'admins', 'admin', 'admin_index.php')) {
+        if (! try_login($conn, $email, $password, 'admins', 'admin', 'admin.php')) {
             // then regular users
             if (! try_login($conn, $email, $password, 'users', 'user', 'index.php')) {
                 $errors[] = 'Invalid email or password.';

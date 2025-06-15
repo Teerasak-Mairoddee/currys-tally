@@ -128,6 +128,15 @@ $insuranceRatePct  = $phonesSold > 0
           <?= $insuranceRatePct !== null ? $insuranceRatePct . '%' : '–' ?>
         </div>
       </div>
+
+          <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+        <div class="widget">
+          <a href="admin.php" >
+            <i class="fa-solid fa-shield-halved"></i> Admin Controls
+          </a>
+          </div>
+        <?php endif; ?>
+
     </main>
 
     <!-- Color Picker Form -->
