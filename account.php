@@ -1,4 +1,4 @@
-﻿<?php
+﻿﻿<?php
 require __DIR__ . '/auth.php';
 include __DIR__ . '/db_conn.php';
 
@@ -84,7 +84,7 @@ $insuranceRatePct  = $phonesSold > 0
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     rel="stylesheet" crossorigin="anonymous"
   />
-  <link rel="stylesheet" href="style/css/style.css?v=1.1.6">
+  <link rel="stylesheet" href="style/css/style.css?v=1.4.0">
 </head>
 <body class="account-page">
 
@@ -145,35 +145,35 @@ $insuranceRatePct  = $phonesSold > 0
         </div>
       <?php endif; ?>
 
-      <form method="POST" action="account.php" class="form-account">
-        <div class="form-group">
-          <label for="line_color">Timeline Color</label>
-          <input
-            type="color"
-            id="line_color"
-            name="line_color"
-            value="<?= htmlspecialchars($currentColor, ENT_QUOTES) ?>"
-          >
-        </div>
-        <button type="submit" class="btn">Save</button>
-      </form>
+    <form method="POST" action="account.php" class="form-account">
+      <div class="form-group">
+        <label for="line_color">Timeline Color</label>
+        <input
+          type="color"
+          id="line_color"
+          name="line_color"
+          value="<?= htmlspecialchars($currentColor, ENT_QUOTES) ?>"
+        >
+      </div>
+      <button type="submit" class="btn">Save</button>
+    </form>
 
       <p><a href="index.php" class="link-back">← Back to Dashboard</a></p>
     </section>
   </div>
 
   <!-- Sidebar toggle script -->
-  <script>
-    const sidebar   = document.getElementById('sidebar'),
-          toggleBtn = document.getElementById('sidebarToggle'),
-          mainCont  = document.getElementById('mainContent');
+<script>
+  const sidebar   = document.getElementById('sidebar'),
+        toggleBtn = document.getElementById('sidebarToggle'),
+        mainCont  = document.getElementById('mainContent');
 
-    toggleBtn.addEventListener('click', () => {
-      const open = sidebar.classList.toggle('open');
-      mainCont.classList.toggle('shifted');
-      toggleBtn.textContent = open ? '✖' : '☰';
-    });
-  </script>
+  toggleBtn.addEventListener('click', () => {
+    const open = sidebar.classList.toggle('open');
+    mainCont.classList.toggle('shifted');
+    toggleBtn.textContent = open ? '✖' : '☰';
+  });
+</script>
 
   <!-- Floating Back-to-Dashboard Button -->
   <a href="index.php" class="fab" aria-label="Back to Dashboard">

@@ -1,27 +1,53 @@
 ﻿<?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-  header('Location: login.php');
-  exit;
-}
+require __DIR__ . '/auth.php';
 include __DIR__ . '/db_conn.php';
 
-// — Fetch and cache first name —
-if (empty($_SESSION['first_name'])) {
-    $stmt = $conn->prepare("SELECT first_name FROM staff WHERE staff_id = ? LIMIT 1");
-    $stmt->bind_param('i', $_SESSION['user_id']);
-    $stmt->execute();
-    $stmt->bind_result($fetchedFirstName);
-    if ($stmt->fetch()) {
-        $_SESSION['first_name'] = $fetchedFirstName;
-    } else {
-        $_SESSION['first_name'] = 'Team Member';
-    }
-    $stmt->close();
+$firstName = 'User';
+$stmt = $conn->prepare("SELECT first_name FROM staff WHERE staff_id = ?");
+$stmt->bind_param('i', $_SESSION['user_id']);
+$stmt->execute();
+$stmt->bind_result($firstName);
+$stmt->fetch();
+$stmt->close();
+
+$today = date('Y-m-d');
+$data = ['Sim-Only'=>0,'Post-Pay'=>0,'Handset-Only'=>0,'Upgrades'=>0,'Accessories'=>0,'Insurance'=>0];
+
+$stmt = $conn->prepare("SELECT sale_type, COUNT(*) FROM sales WHERE DATE(sold_at) = ? GROUP BY sale_type");
+$stmt->bind_param('s', $today);
+$stmt->execute();
+$stmt->bind_result($type, $count);
+while ($stmt->fetch()) {
+  if (isset($data[$type])) $data[$type] = $count;
 }
-$firstName = $_SESSION['first_name'];
+$stmt->close();
+
+// Filter linked items
+$phones = $data['Post-Pay'] + $data['Handset-Only'];
+
+$accStmt = $conn->prepare("SELECT COUNT(*) FROM sales WHERE sale_type = 'Accessories' AND sold_with IN (
+  SELECT sale_id FROM sales WHERE DATE(sold_at) = ? AND sale_type IN ('Post-Pay','Handset-Only'))");
+$accStmt->bind_param('s', $today);
+$accStmt->execute();
+$accStmt->bind_result($linkedAccessories);
+$accStmt->fetch();
+$accStmt->close();
+
+$insStmt = $conn->prepare("SELECT COUNT(*) FROM sales WHERE sale_type = 'Insurance' AND sold_with IN (
+  SELECT sale_id FROM sales WHERE DATE(sold_at) = ? AND sale_type = 'Post-Pay')");
+$insStmt->bind_param('s', $today);
+$insStmt->execute();
+$insStmt->bind_result($linkedInsurance);
+$insStmt->fetch();
+$insStmt->close();
+
+$accRate = $phones ? round($linkedAccessories / $phones * 100) : 0;
+$insRate = $phones ? round($linkedInsurance / $phones * 100) : 0;
+
 $conn->close();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +68,7 @@ $conn->close();
   />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="style/css/style.css?v=1.0.2">
+  <link rel="stylesheet" href="style/css/style.css?v=1.4.0">
 </head>
 <body>
 

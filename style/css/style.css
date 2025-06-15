@@ -3,130 +3,13 @@
     --accent-hover: #580B8F;
 }
 
-
-
-/* Use Currys’ Inter font everywhere by default */
+/* Global font and box-sizing */
 body, input, button, select, textarea {
     font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
 }
 
-/* layout grid for widgets */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
-    align-items: start;
-    padding: 1rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    grid-auto-rows: minmax(250px, auto);
-}
-
-header {
-    text-align: center;
-    margin-top: 1rem;
-}
-
-footer {
-    text-align: center;
-    margin: 2rem 0;
-    color: #666;
-}
-
-/* common widget styles */
-.widget {
-    background: #fff;
-    border-radius: 4px;
-    padding: 1rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 250px;
-    text-align: center;
-}
-
-    .widget h2 {
-        margin: 0 0 1.5rem;
-        font-size: 1.1rem;
-        color: #333;
-    }
-
-    .widget .value {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: var(--accent);
-    }
-
-.date-nav {
-    display: inline-flex;
-    align-items: center;
-
- 
-  
-    padding: 0.25rem 0.5rem;
-    gap: 0.5rem;
-}
-
-.date-label {
-    font-weight: 600;
-    min-width: 100px;
-    text-align: center;
-    font-size: 0.95rem;
-}
-
-.date-btn {
-    background: transparent;
-    border: none;
-    padding: 0.25rem;
-    cursor: pointer;
-    color: var(--accent);
-    font-size: 1rem;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-    .date-btn:hover {
-        background: rgba(0, 0, 0, 0.05);
-    }
-
-    .date-btn:focus {
-        outline: 2px solid var(--accent);
-        outline-offset: 2px;
-    }
-
-
-#currentDate {
-    font-weight: bold;
-}
-
-/* Full-width button spans all columns */
-.dashboard-grid .full-width {
-    grid-column: 1 / -1;
-    padding: 0;
-}
-
-/* Log Sale button styling */
-.log-sale-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--accent);
-    color: #fff;
-    font-weight: bold;
-    text-decoration: none;
-    height: 100%;
-    padding: 1rem 0;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-    .log-sale-btn:hover {
-        background-color: var(--accent-hover);
-    }
-
-/* Sidebar base */
+/* SIDEBAR */
 .sidebar {
     position: fixed;
     top: 0;
@@ -163,7 +46,10 @@ footer {
             background: #444;
         }
 
-/* Toggle button */
+    .sidebar.open {
+        left: 0;
+    }
+
 .sidebar-toggle {
     position: fixed;
     top: 1rem;
@@ -184,93 +70,123 @@ footer {
         background: var(--accent-hover);
     }
 
-/* Main content shifts right when sidebar is open */
 .main-content {
     transition: margin-left 0.3s ease;
     margin-left: 0;
     padding: 1rem;
 }
 
-/* When sidebar active */
-.sidebar.open {
-    left: 0;
-}
-
-.main-content.shifted {
-    margin-left: 240px;
-}
-
-/* in style/css/style.css (or your form-specific stylesheet) */
-
-/* Base input style */
-.form-custom__input,
-input[type="number"],
-select {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    font-family: 'Inter', sans-serif;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background: #fff;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
-}
-
-    /* Focus state */
-    .form-custom__input:focus,
-    input[type="number"]:focus,
-    select:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.15); /* var(--accent) at 15% */
-        outline: none;
+    .main-content.shifted {
+        margin-left: 240px;
     }
 
-/* Label styling */
-.form-custom__group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
+/* DASHBOARD GRID */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    align-items: start;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    grid-auto-rows: minmax(250px, auto);
 }
 
-    .form-custom__group label,
-    .form-custom__label {
-        margin-bottom: 0.25rem;
+.widget {
+    background: #fff;
+    border-radius: 4px;
+    padding: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 250px;
+    text-align: center;
+}
+
+    .widget h2 {
+        margin: 0 0 1.5rem;
+        font-size: 1.1rem;
+        color: #333;
+    }
+
+    .widget .value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--accent);
+    }
+
+/* FORM STYLES */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: #fff;
+    padding: 2rem;
+    margin: 2rem auto;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+    width: 95%;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+    .form-group label {
+        margin-bottom: 0.4rem;
         font-weight: 500;
         color: #333;
     }
 
-/* Placeholder color */
-.form-custom__input::placeholder {
-    color: #999;
+input[type="number"],
+select,
+input[type="color"],
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 0.4rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* Style the select arrow */
-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='14' height='8' viewBox='0 0 14 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23999' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 14px 8px;
-    padding-right: 2.5rem;
-}
-
-    /* Disabled state */
-    .form-custom__input[disabled],
-    select[disabled] {
-        background: #f5f5f5;
-        color: #999;
-        cursor: not-allowed;
+    input:focus,
+    select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.15);
+        outline: none;
     }
 
-/* === Account Summary === */
-.account-summary {
-    margin: 2rem auto;
-    max-width: 800px;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+input[type="checkbox"] {
+    accent-color: var(--accent);
 }
 
-/* === Alerts === */
+/* BUTTONS */
+button.btn,
+.btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    button.btn:hover,
+    .btn:hover {
+        background: var(--accent-hover);
+    }
+
+/* ALERTS */
 .alert {
     max-width: 800px;
     margin: 1rem auto;
@@ -289,64 +205,62 @@ select {
         color: #a12a2a;
     }
 
-/* === Account Form === */
-.account-form {
-    max-width: 400px;
-    margin: 2rem auto 1rem;
-    padding: 1.5rem;
+/* CHART WIDGET */
+.full-chart-widget {
+    width: 100%;
+    margin: 1rem auto;
+    padding: 1rem;
     background: #fff;
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.form-account .form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-}
-
-.form-account label {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #333;
-}
-
-.form-account input[type="color"] {
+.full-chart-container {
+    position: relative;
     width: 100%;
-    height: 3rem;
-    border: none;
-    padding: 0;
-    cursor: pointer;
+    height: 40vh;
 }
 
-.form-account .btn {
-    display: block;
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-    .form-account .btn:hover {
-        background: var(--accent-hover);
+@media (min-width: 600px) {
+    .full-chart-widget {
+        max-width: 900px;
     }
 
-.form-account .link-back {
-    display: inline-block;
-    margin-top: 1rem;
-    color: var(--accent);
-    text-decoration: none;
-    transition: color 0.2s;
+    .full-chart-container {
+        height: 60vh;
+    }
 }
 
-    .form-account .link-back:hover {
-        color: var(--accent-hover);
+@media (max-width: 480px) {
+    .full-chart-widget {
+        width: 90%;
+        max-width: 400px;
+        margin: 1rem auto;
     }
+}
+
+/* Select2 icon spacing */
+.select2-container .select2-selection__rendered i {
+    margin-right: 0.5em;
+}
+
+.select2-dropdown .fa {
+    margin-right: 0.5em;
+}
+
+/* LOGIN/REGISTER PAGES */
+body.login-page, body.register-page {
+    background: #f4f4f9;
+}
+
+.login-container, .register-container {
+    max-width: 420px;
+    margin: 5vh auto;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 2rem 1.5rem;
+}
 
 /* Floating Action Button (FAB) */
 .fab {
@@ -378,197 +292,86 @@ select {
         outline-offset: 2px;
     }
 
-/* ========================= */
-/* Login Page Styles         */
-/* ========================= */
-
-body.login-page {
-    background: #f4f4f9;
-    font-family: 'Inter', sans-serif;
-}
-
-.login-container {
-    max-width: 400px;
-    margin: 5vh auto;
-    background: #fff;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    padding: 2rem 1.5rem;
-}
-
-.login-title {
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    text-align: center;
-    color: #333;
-}
-
-.alert {
-    margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
+/* Log Sale button styling */
+.log-sale-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--accent);
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    height: 100%;
+    padding: 1rem 0;
     border-radius: 4px;
-    font-weight: 500;
+    transition: background-color 0.2s;
 }
 
-    .alert.error {
-        background: #fdecea;
-        color: #a12a2a;
+    .log-sale-btn:hover {
+        background-color: var(--accent-hover);
     }
 
-/* Form elements */
-.form-group {
-    margin-bottom: 1rem;
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.color-preview {
+    width: 100%;
+    height: 40px;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+input[type="color"] {
+    width: 100%;
+    height: 3rem;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    background: none;
+}
+
+header,
+footer {
+    text-align: center;
     display: flex;
     flex-direction: column;
-}
-
-    .form-group label {
-        margin-bottom: 0.5rem;
-        color: #555;
-        font-weight: 500;
-    }
-
-.form-control {
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-    .form-control:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(156,39,176,0.15);
-        outline: none;
-    }
-
-/* Actions */
-.form-actions {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: space-between;
     align-items: center;
-    margin-top: 1.5rem;
+    justify-content: center;
 }
 
-.btn {
-    flex: 1;
-    text-align: center;
-    padding: 0.6rem 1rem;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-    text-decoration: none;
-}
-
-    .btn:hover {
-        background: var(--accent-hover);
-    }
-
-.btn-secondary {
-    background: #ccc;
-    color: #333;
-}
-
-    .btn-secondary:hover {
-        background: #bbb;
-    }
-
-/* ============================== */
-/* Register Page Styles           */
-/* ============================== */
-
-body.register-page {
-    background: #f4f4f9;
-    font-family: 'Inter', sans-serif;
-}
-
-.register-container {
-    max-width: 420px;
-    margin: 5vh auto;
+/* Account form section */
+.account-form {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
     background: #fff;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    padding: 2rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
 
-/* In your style/css/style.css */
-
-.leaderboard-list {
-    list-style: decimal inside; /* puts the number inside the content box */
-    margin: 0;
-    padding: 0; /* remove extra indent */
-    text-align: left; /* ensures items are left-aligned */
-}
-
-    .leaderboard-list li {
-        margin: 0.3rem 0;
-        padding-left: 0.25rem; /* a little breathing room after the number */
+    .account-form .form-account {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
     }
 
-/* style/css/style.css */
-.timeline-widget.clickable {
-    cursor: pointer;
-}
-
-/* Full-chart widget: fluid on mobile, constrained on desktop */
-.full-chart-widget {
-    width: 100%;
-    margin: 1rem auto;
-    padding: 1rem;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-/* Only apply max-width for tablets and up */
-@media (min-width: 600px) {
-    .full-chart-widget {
-        max-width: 900px;
-    }
-}
-
-/* Chart container height: smaller on mobile, bigger on desktop */
-.full-chart-container {
-    position: relative;
-    width: 100%;
-    height: 40vh; /* mobile-friendly */
-}
-
-@media (min-width: 600px) {
-    .full-chart-container {
-        height: 60vh; /* desktop view */
-    }
-}
-
-@media (max-width: 480px) {
-    .full-chart-widget {
-        width: 90%; /* 90% of viewport width */
-        max-width: 400px;
-        margin: 1rem auto; /* centers it */
-    }
-}
-
-
-/* Remove the browser’s default body margin on timeline.php */
-body.timeline-page {
-    margin: 0;
-    padding: 0;
-}
-
-    /* Remove the main-content padding for timeline.php */
-    body.timeline-page .main-content {
-        padding: 0;
+    .account-form .form-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
     }
 
-.select2-container .select2-selection__rendered i {
-    margin-right: 0.5em;
-}
+    .account-form input[type="color"] {
+        height: 3rem;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 0.5rem;
+        width: 100%;
+        max-width: 100%;
+    }
 
-.select2-dropdown .fa {
-    margin-right: 0.5em;
-}
+    .account-form button.btn {
+        width: 100%;
+    }
