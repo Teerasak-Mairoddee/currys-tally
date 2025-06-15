@@ -129,8 +129,15 @@ $icons = [
         </select>
       </div>
 
+      
+
+      <div class="form-group">
+        <label for="contract_count">Amount Sold</label>
+        <input type="number" name="contract_count" min="1" required>
+      </div>
+
       <div id="linked-items" class="form-group" style="display:none;">
-        <label>Linked Add-ons (optional)</label>
+        <label>Any sold-with?</label>
         <div class="checkbox-group">
           <?php foreach ($linkedTypes as $type): ?>
             <label>
@@ -142,11 +149,6 @@ $icons = [
           <label for="accessory_qty">Accessory Quantity</label>
           <input type="number" name="accessory_qty" min="1" max="5" value="1">
         </div>
-      </div>
-
-      <div class="form-group">
-        <label for="contract_count">Amount Sold</label>
-        <input type="number" name="contract_count" min="1" required>
       </div>
 
       <button type="submit" class="btn">Log Sale</button>
