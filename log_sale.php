@@ -1,53 +1,80 @@
 ﻿<?php 
-require __DIR__ . '/auth.php';      // enforces login
-include __DIR__ . '/db_conn.php';   // provides $conn
+require __DIR__ . '/auth.php';
+include __DIR__ . '/db_conn.php';
 
-// 1) Add 'Accessories' here
-$allowedTypes = ['Sim-Only', 'Post-Pay', 'Upgrades', 'Handset-Only', 'Insurance', 'Accessories'];
-
+$allowedContracts = ['Post-Pay', 'Handset-Only'];
+$singleSaleTypes  = ['Sim-Only', 'Upgrades', 'Accessories', 'Insurance'];
+$linkedTypes      = ['Insurance', 'Accessories'];
+$allSaleTypes     = array_merge($allowedContracts, $singleSaleTypes);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $staff_id       = intval($_SESSION['user_id']);
+    $staff_id = intval($_SESSION['user_id']);
+    $sale_type = $_POST['sale_type'] ?? '';
+    $linked_items = $_POST['linked_items'] ?? [];
     $contract_count = filter_var($_POST['contract_count'] ?? '', FILTER_VALIDATE_INT);
-    $sale_type      = $_POST['sale_type'] ?? '';
+    $accessory_qty = filter_var($_POST['accessory_qty'] ?? 1, FILTER_VALIDATE_INT);
 
-    // 2) Validation now allows Accessories
-    if ($contract_count === false || $contract_count < 1) {
-        $_SESSION['flash_error'] = 'Enter a valid number of contracts.';
-    } elseif (! in_array($sale_type, $allowedTypes, true)) {
-        $_SESSION['flash_error'] = 'Select a valid sale type.';
+    if (!in_array($sale_type, $allSaleTypes)) {
+        $_SESSION['flash_error'] = 'Invalid sale type.';
+    } elseif ($contract_count === false || $contract_count < 1) {
+        $_SESSION['flash_error'] = 'Enter a valid contract count.';
+    } elseif ($accessory_qty !== false && ($accessory_qty < 1 || $accessory_qty > 5)) {
+        $_SESSION['flash_error'] = 'Accessory quantity must be 1–5.';
     } else {
-        $stmt = $conn->prepare("
-            INSERT INTO sales (staff_id, contract_value, sale_type, sold_at)
-            VALUES (?, 1, ?, NOW())
-        ");
-        $stmt->bind_param('is', $staff_id, $sale_type);
-        for ($i = 0; $i < $contract_count; $i++) {
-            if (! $stmt->execute()) {
-                $_SESSION['flash_error'] = 'Failed to log sale: ' . $stmt->error;
-                break;
-            }
-        }
-        $stmt->close();
+        $conn->begin_transaction();
+        try {
+            $stmt = $conn->prepare("
+                INSERT INTO sales (staff_id, contract_value, sale_type, sold_at)
+                VALUES (?, 1, ?, NOW())
+            ");
+            $stmt->bind_param('is', $staff_id, $sale_type);
 
-        if (empty($_SESSION['flash_error'])) {
-            $_SESSION['flash_success'] = "Logged {$contract_count} {$sale_type} sale(s).";
-            header('Location: index.php');
+            $linkStmt = $conn->prepare("
+                INSERT INTO sales (staff_id, contract_value, sale_type, sold_at, sold_with)
+                VALUES (?, 1, ?, NOW(), ?)
+            ");
+
+            for ($i = 0; $i < $contract_count; $i++) {
+                $stmt->execute();
+                $main_sale_id = $stmt->insert_id;
+
+                if (in_array($sale_type, $allowedContracts)) {
+                    foreach ($linked_items as $type) {
+                        $qty = ($type === 'Accessories') ? $accessory_qty : 1;
+                        if (in_array($type, $linkedTypes)) {
+                            for ($j = 0; $j < $qty; $j++) {
+                                $linkStmt->bind_param('isi', $staff_id, $type, $main_sale_id);
+                                $linkStmt->execute();
+                            }
+                        }
+                    }
+                }
+            }
+
+            $stmt->close();
+            $linkStmt->close();
+            $conn->commit();
+
+            $_SESSION['flash_success'] = "Logged {$contract_count} {$sale_type} sale(s)." . 
+                (count($linked_items) ? " With add-ons." : "");
+            header("Location: index.php");
             exit;
+        } catch (Exception $e) {
+            $conn->rollback();
+            $_SESSION['flash_error'] = "Failed: " . $e->getMessage();
         }
     }
+
     $conn->close();
 }
 
-// 3) Add the icon for Accessories
 $icons = [
-    'Sim-Only'     => 'fa-signal',
-    'Post-Pay'     => 'fa-credit-card',
-    'Upgrades' => 'fa-solid fa-rotate',
-    'Handset-Only' => 'fa-mobile-screen-button',
-    'Insurance'    => 'fa-shield-halved',
-    'Accessories'  => 'fa-box-open'
-    
+    'Sim-Only'     => 'fa-solid fa-signal',
+    'Post-Pay'     => 'fa-solid fa-credit-card',
+    'Upgrades'     => 'fa-solid fa-rotate',
+    'Handset-Only' => 'fa-solid fa-mobile-screen-button',
+    'Insurance'    => 'fa-solid fa-shield-halved',
+    'Accessories'  => 'fa-solid fa-box-open'
 ];
 ?>
 <!DOCTYPE html>
@@ -55,30 +82,19 @@ $icons = [
 <head>
   <meta charset="UTF-8">
   <title>Log a New Sale</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ✅ Updated CSS version for cache busting -->
+  <link rel="stylesheet" href="style/css/style.css?v=1.4.0">
 
-  <!-- Main stylesheet & dependencies -->
-  <link rel="stylesheet" href="style/css/style.css?v=1.0.2">
-  <link
-    href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
-    rel="stylesheet"
-  />
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    rel="stylesheet"
-    crossorigin="anonymous"
-  />
-
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
 
-
-  <!-- Sidebar toggle button -->
   <button id="sidebarToggle" class="sidebar-toggle">☰</button>
 
-  <!-- Slide-out sidebar -->
   <nav id="sidebar" class="sidebar">
     <ul>
       <li><a href="index.php"><i class="fa-solid fa-house"></i> Dashboard</a></li>
@@ -88,92 +104,91 @@ $icons = [
     </ul>
   </nav>
 
-  <div id="mainContent" class="main-content">
-    <header><h1>Log a New Sale</h1></header>
+<div id="mainContent" class="main-content">
+  <div class="form-container">
+    <h1>Log a New Sale</h1>
 
-    <!-- Flash messages -->
     <?php if (!empty($_SESSION['flash_error'])): ?>
-      <div class="widget" style="background:#ffe5e5;color:#a00;">
-        <?= htmlspecialchars($_SESSION['flash_error'],ENT_QUOTES) ?>
-      </div>
-    <?php unset($_SESSION['flash_error']); endif; ?>
+      <div class="alert error"><?= htmlspecialchars($_SESSION['flash_error']) ?></div>
+      <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
 
     <?php if (!empty($_SESSION['flash_success'])): ?>
-      <div class="widget" style="background:#e5ffe5;color:#060;">
-        <?= htmlspecialchars($_SESSION['flash_success'],ENT_QUOTES) ?>
+      <div class="alert success"><?= htmlspecialchars($_SESSION['flash_success']) ?></div>
+      <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
+
+    <form method="POST" action="">
+      <div class="form-group">
+        <label for="sale_type">Select Sale Type</label>
+        <select name="sale_type" id="sale_type" required>
+          <option value="">– Select –</option>
+          <?php foreach ($allSaleTypes as $type): ?>
+            <option value="<?= $type ?>" data-icon="<?= $icons[$type] ?? '' ?>"><?= $type ?></option>
+          <?php endforeach; ?>
+        </select>
       </div>
-    <?php unset($_SESSION['flash_success']); endif; ?>
 
-    <!-- Form in a centered widget -->
-    <main class="dashboard-grid" style="max-width:400px;margin:1rem auto;">
-      <div class="widget">
-        <form method="POST" action="log_sale.php">
-
-          <div class="form-custom__group" style="margin-bottom:1.5rem;">
-            <label class="form-custom__label" for="sale_type">Type of Sale:</label>
-            <select id="sale_type" name="sale_type" class="form-custom__input" required>
-              <option value="">– Select –</option>
-              <?php foreach ($allowedTypes as $type): ?>
-                <option
-                  value="<?= htmlspecialchars($type) ?>"
-                  data-icon="<?= $icons[$type] ?>"
-                >
-                  <?= htmlspecialchars($type) ?>
-                </option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-
-          <div class="form-custom__group" style="margin-bottom:1rem;">
-            <label class="form-custom__label" for="contract_count">Amount Sold:</label>
-            <input
-              type="number"
-              id="contract_count"
-              name="contract_count"
-              class="form-custom__input"
-              min="1"
-              required
-            >
-          </div>
-          
-          <button type="submit" class="log-sale-btn" style="width:100%;">Submit</button>
-        </form>
+      <div id="linked-items" class="form-group" style="display:none;">
+        <label>Linked Add-ons (optional)</label>
+        <div class="checkbox-group">
+          <?php foreach ($linkedTypes as $type): ?>
+            <label>
+              <input type="checkbox" name="linked_items[]" value="<?= $type ?>" <?= $type === 'Accessories' ? 'id="acc-check"' : '' ?>> <?= $type ?>
+            </label>
+          <?php endforeach; ?>
+        </div>
+        <div id="accessory-count" class="form-group" style="display:none; margin-top:0.5rem;">
+          <label for="accessory_qty">Accessory Quantity</label>
+          <input type="number" name="accessory_qty" min="1" max="5" value="1">
+        </div>
       </div>
-    </main>
 
-    <footer>
-      <p><a href="index.php">← Back to Dashboard</a></p>
-    </footer>
+      <div class="form-group">
+        <label for="contract_count">Amount Sold</label>
+        <input type="number" name="contract_count" min="1" required>
+      </div>
+
+      <button type="submit" class="btn">Log Sale</button>
+    </form>
   </div>
+</div>
 
-  <!-- Sidebar toggle script -->
-  <script>
-    const sidebar = document.getElementById('sidebar'),
-          toggle  = document.getElementById('sidebarToggle'),
-          mainC   = document.getElementById('mainContent');
-    toggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      mainC.classList.toggle('shifted');
-      toggle.textContent = sidebar.classList.contains('open') ? '✖' : '☰';
-    });
-  </script>
-
-  <!-- Initialize Select2 with icons -->
-  <script>
-    function formatWithIcon(option) {
+<script>
+  $('#sale_type').select2({
+    width: '100%',
+    templateResult: function(option) {
       if (!option.id) return option.text;
-      const iconClass = $(option.element).data('icon');
-      return $(`<span><i class="fa ${iconClass}"></i> ${option.text}</span>`);
-    }
+      const icon = $(option.element).data('icon');
+      return $(`<span><i class="${icon}"></i> ${option.text}</span>`);
+    },
+    templateSelection: function(option) {
+      if (!option.id) return option.text;
+      const icon = $(option.element).data('icon');
+      return $(`<span><i class="${icon}"></i> ${option.text}</span>`);
+    },
+    minimumResultsForSearch: Infinity
+  });
 
-    $(document).ready(function() {
-      $('#sale_type').select2({
-        width: '100%',
-        templateResult:  formatWithIcon,
-        templateSelection: formatWithIcon,
-        minimumResultsForSearch: Infinity
-      });
-    });
-  </script>
+  $('#sale_type').on('change', function() {
+    const allowed = <?= json_encode($allowedContracts) ?>;
+    $('#linked-items').toggle(allowed.includes($(this).val()));
+  });
+
+  $(document).on('change', '#acc-check', function() {
+    $('#accessory-count').toggle(this.checked);
+  });
+
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('sidebarToggle');
+  const mainCont = document.getElementById('mainContent');
+
+  toggleBtn.addEventListener('click', () => {
+    const open = sidebar.classList.toggle('open');
+    mainCont.classList.toggle('shifted');
+    toggleBtn.textContent = open ? '✖' : '☰';
+  });
+</script>
+
 </body>
 </html>
